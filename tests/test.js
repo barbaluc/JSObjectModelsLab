@@ -14,18 +14,58 @@
     });
 
     // TODO: Vérifier que la création d'objets SpeedCheck est Possible
+    test('Test isCreationPossible', function() {
+      notEqual(createSpeedCheck(), null, 'Constructor');
+      notEqual(createSpeedCheckFR(), null, 'Constructor FR');
+      notEqual(createSpeedCheckBE(), null, 'Constructor BE');
+    });
 
 
     // TODO: Vérifier que les objets créés directement avec creatSpeedCheck ne sont pas utilisables :
     // speed0 = creatSpeedCheck();
     // speed0.speed = 42; // SHOULD throw a SpeedCheckError.
     // speed0.licencePlate = '3-DFE-456'; // SOULD throw a SpeedCheckError.
-
+    test('Test isAccessNotPossible', function() {
+      var speed0 = createSpeedCheck();
+      throws(function() { speed0.speed = 42; }, "should throw a SpeedCheckError");
+      throws(function() { speed0.licencePlate = '3-DFE-456'; }, "should throw a SpeedCheckError");
+    }); 
 
     // TODO: Vérifier que TOUTES les fonctionnalités de createSpeedCheckFR sont correctes (effects de bords, valeurs négatives, etc.) pour tous les attributs (speed et licencePlate)
+    test('Test SpeedCheckFR', function() {
+        var speed0 = createSpeedCheckFR();
+        equal(speed0.speed, 0, "should be 0");
+        speed0.speed = 90;
+        equal(speed0.speed, 90, "should be 90");
+        throws(function() { speed0.speed = -90; }, "SHOULD throw a SpeedCheckError");
+        equal(speed0.speed, 90, "should be the last correct speed");
+        equal(speed0.infraction, false, "shouldn't be an infraction (42km/h)");
+        speed0.speed = 135;
+        equal(speed0.infraction, true, "should be an infraction (135km/h)");
+        equal(speed0.licencePlate, "???", "should be an unkown licence plate");
+        speed0.licencePlate = "AB123CD";
+        equal(speed0.licencePlate, "AB123CD", "should be AB123CD licence plate");
+        throws(function() { speed0.licencePlate = "NOTAPLAQUE"; }, "should throw an SpeedCheckError because invalid licencePlate");
+        equal(speed0.licencePlate, "AB123CD", "should be the last correct licence plate");
+    });
 
     // TODO: Vérifier que TOUTES les fonctionnalités de createSpeedCheckBE sont correctes (effects de bords, valeurs négatives, etc.) pour tous les attributs (speed et licencePlate)
-
+    test('Test SpeedCheckBE', function() {
+        var speed0 = createSpeedCheckBE();
+        equal(speed0.speed, 0, "should be 0");
+        speed0.speed = 90;
+        equal(speed0.speed, 90, "should be 90");
+        throws(function() { speed0.speed = -90; }, "SHOULD throw a SpeedCheckError");
+        equal(speed0.speed, 90, "should be the last correct speed");
+        equal(speed0.infraction, false, "shouldn't be an infraction (42km/h)");
+        speed0.speed = 135;
+        equal(speed0.infraction, true, "should be an infraction (135km/h)");
+        equal(speed0.licencePlate, "???", "should be an unkown licence plate");
+        speed0.licencePlate = "1-ABC-234";
+        equal(speed0.licencePlate, "1-ABC-234", "should be 1ABC234 licence plate");
+        throws(function() { speed0.licencePlate = "NOTAPLAQUE"; }, "should throw an SpeedCheckError because invalid licencePlate");
+        equal(speed0.licencePlate, "1-ABC-234", "should be the last correct licence plate");
+    });
 
     // TODO: Vérifier que la fonction toString() fonctionne bien.
     //  - chaine de caractère attentue pour une infracion (e.g. licencePlate === 'WD366MD' et  speed === 135):
