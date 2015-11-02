@@ -78,7 +78,7 @@
    };
 
    shape.toString = function() {
-    return "name :" + getName + "; id : " + attributes._id;
+    return "Name :" + getName + "; id : " + attributes._id;
   }
 
   shape.id = attributes._id;
