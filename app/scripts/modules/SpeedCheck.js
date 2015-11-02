@@ -40,11 +40,11 @@
           toString: {
               get: function() {
                   if (this.infraction){
-                    return "Véhicule " + this._licencePlate + " roule à " + this._speed + "km/h. Infraction!";}
-
+                    return "Vehicle " + this._licencePlate + " is travelling at " + this._speed + "km/h. Breach of the law !";
+                  }
                   else{
-                    return "Véhicule " + this._licencePlate + " roule à " + this._speed + "km/h. Ça va, circulez...";}
-                }
+                    return "Vehicle " + this._licencePlate + " is travelling at " + this._speed + "km/h. That's fine, pass your way..";}
+                  }
           },
           infraction: {
               get: function() {

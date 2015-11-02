@@ -72,12 +72,17 @@
     //      "Véhicule WD366MD roule à 135 km/h. Infraction!"
     //  - chaine de caractère attendue pour sans infraction (e.g. licencePlate === 'WD366MD' et  speed === 105):
     //      "Véhicule WD366MD roule à 105 km/h. Ça va, circulez..."
-    test('verification toString', function() {
+    test('Test SpeecCheck toString', function() {
       var speed0 = createSpeedCheckBE();
-      speed0.speed = 42;
-      speed0.licencePlate = '1-BMA-481';
+      speed0.speed = 40;
+      speed0.licencePlate = '1-ABC-234';
 
-      equal(speed0.toString,'Véhicule 1-BMA-481 roule à 42km/h. Ça va, circulez...','test String');
+      var speed1 = createSpeedCheckFR();
+      speed1.speed = 150;
+      speed1.licencePlate = 'AB123CD';
+
+      equal(speed0.toString,'Vehicle 1-ABC-234 is travelling at 40km/h. That\'s fine, pass your way..','Correct SpeecCheckBE toString');
+      equal(speed1.toString, 'Vehicle AB123CD is travelling at 150km/h. Breach of the law !', 'Correct SpeedCheckFR toString')
     });
 
 
@@ -126,8 +131,7 @@
         {"y":100.0,\
         "x":0.0},\
         {"y":0.0,\
-        "x":0.0}],\
-        "area":"10000"}');
+        "x":0.0}]}');
 
         naturalAttr = JSON.parse('{"building":false,\
         "_id":"-630043",\
@@ -239,41 +243,63 @@
     });
 
 
-
-
-
     /*-----------------------------------*/
     /* PART THREE: Test with a JSON file */
     /*-----------------------------------*/
 
     // TODO Write the whole test module for testing with the app/data/eure.json file.
-    var obj;
+    var obj = [];
+    var content = {buildings: [], naturals: [], highways: [], amenities: []};
+    var overallArea = 0;
+
     module('Asynchronous Unit Test Module', {
-        setup: function() {
+        beforeEach: function() {
             stop();
 
             // You can load a resource before loaching the test...
-            $.get('test.json').success(function(data){
+            $.get('eure.json').success(function(data){
                 obj = data;
+                content = {buildings: [], naturals: [], highways: [], amenities: []};
+                for (var i = 0; i < obj.length; i++) {
+                  var tmpObj = obj[i];
+
+                  if (tmpObj.hasOwnProperty("building") && tmpObj.building) {
+                    content.buildings.push(window.Shapes.createBuilding(tmpObj));
+                  }
+                  else {
+                    if (tmpObj.hasOwnProperty("natural")) {
+                      content.naturals.push(window.Shapes.createNatural(tmpObj));
+                    }
+                    else if (tmpObj.hasOwnProperty("highway")) {
+                      content.highways.push(window.Shapes.createRoad(tmpObj));
+                    }
+                    else if (tmpObj.hasOwnProperty("amenity")) {
+                      content.amenities.push(window.Shapes.createAmenity(tmpObj));
+                    }
+                  }
+                }
+
                 start();
             });
-
-            // ... Or any asynchroneous task
-            // window.setTimeout(function() {
-            //     obj = {a:'OK', b:'KO'};
-            //     start();
-            // }, 1000);
-
         }
     });
 
-    test('test 1', function() {
-        equal(obj.a, 'OK', 'Message');
-        equal(obj.a+'KO', 'OKKO', 'Message');
+    test('Test objects creation', function () {
+      expect(1);
+      var checkObj = true;
+      if (content.buildings.length + content.amenities.length + content.highways.length + content.naturals.length == 0) {
+        checkObj = false;
+      }
+      equal(true, checkObj, "Should return true if some objects are created");
     });
 
-    test('test 2', function() {
-        equal(obj.a+obj.b, 'OKKO', 'FAil');
+    test('Buildings surfaces', function () {
+      expect(1);
+      var checkArea = true;
+      for(var i = 1; i < content.buildings.length; i++) {
+        overallArea += content.buildings[i].getArea();
+      }
+      if (overallArea == 0) checkArea = false;
+      equal(true, checkArea, "Should return true if the area calcul is working");
     });
-
 }());

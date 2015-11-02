@@ -30,45 +30,35 @@
      createRoad(attributes);
    }
 
-  /* var tableauOrig = [{x:1, y:10}, {x:2, y:20}, {x:3, y: 30}]; --> attributes.nodes
-   var tableauFormaté = tableauOrig.map(function(obj){
-     var rObj = {};
-     rObj[obj.clé] = obj.valeur;
-     return rObj;
-   });
-   // tableauFormaté vaut maintenant [{1:10}, {2:20}, {3:30}],
-   // tableauOrig vaut toujours [{clé:1, valeur:10}, {clé:2, valeur:20}, {clé:3, valeur: 30}] */
-
-   var nodesTrie = attributes.nodes.map(function(obj){
-     var rObj = {};
-     rObj[obj.y] = String(obj.x) + " " + String(obj.y);
-     var a3 = Object.keys(rObj).map(function (k) { 
+  var nodesTrie = attributes.nodes.map(function(obj){
+    var rObj = {};
+    rObj[obj.y] = String(obj.x) + " " + String(obj.y);
+    var result = Object.keys(rObj).map(function (k) { 
       return rObj[k];
     })
-     return a3;
+      return result;
    });
 
 
-   var shape = {};
+  var shape = {};
 
-   /*shape.toString = function() { // public methods accessing hidden parameters.
-      return "CACA";
-   };*/
+  shape.id = attributes._id;
 
-   shape.toSvgPath = function() { // public methods accessing hidden parameters.
+  shape.toString = function() {
+    return "Name :" + getName + "; id : " + attributes._id;
+  }
 
-     var stringReturn = "";
-     //var stringArrayToString = attributes.nodes[0].toString();
-     var cpt=0;
+  shape.toSvgPath = function() { // public methods accessing hidden parameters.
 
-     for (var i = 0; i < nodesTrie.length; i++) {
-        if (i == 0) {
-          stringReturn += "M " + String(nodesTrie[i]);
-        }
-        else {
-          stringReturn += " L " + String(nodesTrie[i]);
-        }
-     }
+    var stringReturn = "";
+    for (var i = 0; i < nodesTrie.length; i++) {
+      if (i == 0) {
+        stringReturn += "M " + String(nodesTrie[i]);
+      }
+      else {
+        stringReturn += " L " + String(nodesTrie[i]);
+      }
+    }
 
      return stringReturn;
    };
@@ -77,18 +67,12 @@
      return name;
    };
 
-   shape.toString = function() {
-    return "Name :" + getName + "; id : " + attributes._id;
-  }
-
-  shape.id = attributes._id;
-
    return shape; // return the newly created object.
   };
 
 
 
-   function createRoad(roadAttr) {
+  function createRoad(roadAttr) {
     return Object.create(createShape, {
      building: {
           value: roadAttr.building
@@ -102,7 +86,30 @@
           },
       }
     });
+  }
 
+  function createBuilding(buildingAttr) {
+    return Object.create(createShape, {
+      _id: {
+          value: buildingAttr._id
+      },
+      nodes: {
+          value: buildingAttr.nodes
+      },
+      getArea: {
+          value: function() {
+            var area = 0;
+            for (var i = 0; i < buildingAttr.nodes.length; i++) {
+              if (i != buildingAttr.nodes.length - 1) {
+                area += (buildingAttr.nodes[i].x * buildingAttr.nodes[i+1].y) - (buildingAttr.nodes[i].y * buildingAttr.nodes[i+1].x);
+              } else {
+                area += (buildingAttr.nodes[i].x * buildingAttr.nodes[0].y) - (buildingAttr.nodes[i].y * buildingAttr.nodes[0].x);
+              }
+            }
+            return Math.abs(area / 2);  
+          },
+      }
+    });
   }
 
   function createAmenity(amenityAttr) {
@@ -146,30 +153,10 @@
     });
   }
 
-  function createBuilding(buildingAttr) {
-    return Object.create(createShape, {
-      _id: {
-          value: buildingAttr._id
-      },
-      nodes: {
-          value: buildingAttr.nodes
-      },
-      area: {
-        value: buildingAttr.area
-      },
-      getArea: {
-          value: function() {
-              return buildingAttr.area;
-          },
-      }
-    });
-  }
-
   global.Shapes.createShape = createShape;
-  global.Shapes.createRoad = createRoad; // Or createRoad ??
-  global.Shapes.createAmenity = createAmenity;
+  global.Shapes.createRoad = createRoad;
   global.Shapes.createBuilding = createBuilding;
+  global.Shapes.createAmenity = createAmenity;
   global.Shapes.createNatural = createNatural;
-
 
 }(this));
