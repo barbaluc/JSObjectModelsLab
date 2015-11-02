@@ -72,7 +72,13 @@
     //      "Véhicule WD366MD roule à 135 km/h. Infraction!"
     //  - chaine de caractère attendue pour sans infraction (e.g. licencePlate === 'WD366MD' et  speed === 105):
     //      "Véhicule WD366MD roule à 105 km/h. Ça va, circulez..."
+    test('verification toString', function() {
+      var speed0 = createSpeedCheckBE();
+      speed0.speed = 42;
+      speed0.licencePlate = '1-BMA-481';
 
+      equal(speed0.toString,'Véhicule 1-BMA-481 roule à 42km/h. Ça va, circulez...','test String');
+    });
 
 
 
@@ -120,7 +126,8 @@
         {"y":100.0,\
         "x":0.0},\
         {"y":0.0,\
-        "x":0.0}]}');
+        "x":0.0}],\
+        "area":"10000"}');
 
         naturalAttr = JSON.parse('{"building":false,\
         "_id":"-630043",\
